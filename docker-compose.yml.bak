@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: badminton-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - JWT_SECRET=${JWT_SECRET:-changez_moi_en_production}
+      - DB_PATH=/data/database.sqlite
+    volumes:
+      - ./data:/data
+    networks:
+      - badminton-network
+
+  frontend:
+    build: ./frontend
+    container_name: badminton-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - badminton-network
+
+networks:
+  badminton-network:
+    driver: bridge
+
+volumes:
+  data:
